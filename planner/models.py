@@ -1,9 +1,8 @@
 from django.db import models
-
-# Create your models here.
+from django.contrib.auth.models import User
 
 class Itinerary(models.Model):
-    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='itineraries')
     destination = models.CharField(max_length=100)
     days = models.PositiveIntegerField()
     generated_plan = models.TextField()
