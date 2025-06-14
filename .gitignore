@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+
+# Django/Migrations
+*.db
+*.sqlite3
+db.sqlite3
+.env
+.env.*
+*.pot
+*.pyc
+*.mo
+
+# Virtual env
+venv/
+env/
+ENV/
+*.egg-info/
+*.egg
+
+# System files
+.DS_Store
+.vscode/
+
+# VSCode/JetBrains IDEs
+.idea/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+.env
+db.sqlite3
+staticfiles/
+node_modules/
