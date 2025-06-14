@@ -40,6 +40,7 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = [
     "aitravelitinerary.onrender.com",
+    "aitravelitinerary2.onrender.com",
     "localhost",
     "127.0.0.1"
 ]
