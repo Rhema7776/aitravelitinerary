@@ -61,14 +61,33 @@ import json
 from .models import Itinerary
 from django.utils import timezone
 from django.conf import settings
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,  permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 from rest_framework import status
 from django.contrib.auth.models import User
 from .serializers import ItinerarySerializer
+from rest_framework.permissions import IsAuthenticated
 
 api_key = settings.GEMINI_API_KEY
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def itinerary_history(request):
+    paginator = PageNumberPagination()
+    paginator.page_size = 5  # You can also use settings.py for this
+
+    queryset = Itinerary.objects.filter(user=request.user).order_by('-created_at')
+
+    # Optional filtering by destination
+    destination = request.GET.get('destination')
+    if destination:
+        queryset = queryset.filter(destination__icontains=destination)
+
+    result_page = paginator.paginate_queryset(queryset, request)
+    serializer = ItinerarySerializer(result_page, many=True)
+    return paginator.get_paginated_response(serializer.data)
 
 class RegisterView(APIView):
     def post(self, request):
@@ -84,11 +103,21 @@ class RegisterView(APIView):
         User.objects.create_user(username=username, password=password)
         return Response({"message": "User created"}, status=status.HTTP_201_CREATED)
 
-@api_view(['GET'])
-def itinerary_history(request):
-    history = Itinerary.objects.all().order_by('-created_at')  
-    serializer = ItinerarySerializer(history, many=True)
-    return Response(serializer.data)
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_itinerary(request, pk):
+    try:
+        itinerary = Itinerary.objects.get(pk=pk, user=request.user)
+        itinerary.delete()
+        return Response({'success': 'Itinerary deleted.'})
+    except Itinerary.DoesNotExist:
+        return Response({'error': 'Itinerary not found.'}, status=404)
+    
+# @api_view(['GET'])
+# def itinerary_history(request):
+#     history = Itinerary.objects.all().order_by('-created_at')  
+#     serializer = ItinerarySerializer(history, many=True)
+#     return Response(serializer.data)
 
 @csrf_exempt
 def generate_itinerary(request):

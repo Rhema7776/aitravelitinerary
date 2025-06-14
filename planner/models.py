@@ -1,7 +1,9 @@
 from django.db import models
+
 # Create your models here.
 
 class Itinerary(models.Model):
+    
     destination = models.CharField(max_length=100)
     days = models.PositiveIntegerField()
     generated_plan = models.TextField()

@@ -37,7 +37,12 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'unsafe-dev-key')
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 
-ALLOWED_HOSTS = ['aitravelitinerary.onrender.com', 'localhost']
+
+ALLOWED_HOSTS = [
+    "aitravelitinerary.onrender.com",
+    "localhost",
+    "127.0.0.1"
+]
 
 
 
@@ -142,10 +147,13 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ]
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 5,
 }
 
 # Static files

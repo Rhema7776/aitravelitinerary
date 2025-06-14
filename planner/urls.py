@@ -8,10 +8,14 @@
 
 from django.urls import path
 from . import views
-from .views import RegisterView
+from .views import RegisterView, itinerary_history, delete_itinerary
+#,, delete_itinerary
+
 
 urlpatterns = [
+    
+    path('itinerary/<int:pk>/delete/', delete_itinerary, name='delete-itinerary'),
     path('api/itinerary/', views.generate_itinerary, name='generate_itinerary'),
-    path('api/history/', views.itinerary_history, name='itinerary_history'),
-    path('api/register/', RegisterView.as_view(), name='register'),  # <-- this line
+    path('history/', itinerary_history, name='itinerary-history'),
+    path('api/register/', RegisterView.as_view(), name='register'),
 ]
