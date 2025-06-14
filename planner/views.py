@@ -159,7 +159,7 @@ def generate_itinerary(request):
         text = gemini_data['candidates'][0]['content']['parts'][0]['text']
 
         itinerary = Itinerary.objects.create(
-            user=request.user,  # 🧠 THIS LINE FIXES IT
+            user=request.user,  
             destination=destination,
             days=days,
             created_at=timezone.now(),
