@@ -76,6 +76,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "https://your-frontend-url.onrender.com",
+    "https://aitravelitinerary.onrender.com",
     "http://localhost:5173",  # Dev only
 ]
 
