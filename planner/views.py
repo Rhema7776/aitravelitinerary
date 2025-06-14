@@ -118,72 +118,66 @@ def delete_itinerary(request, pk):
 #     history = Itinerary.objects.all().order_by('-created_at')  
 #     serializer = ItinerarySerializer(history, many=True)
 #     return Response(serializer.data)
-
-@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def generate_itinerary(request):
-    if request.method == 'POST':
-        try:
-            print("✅ POST request received")
+    try:
+        print("✅ POST request received")
 
-            data = json.loads(request.body)
-            destination = data.get('destination')
-            days = data.get('days')
-            print(f"🔍 Input received - Destination: {destination}, Days: {days}")
+        data = request.data
+        destination = data.get('destination')
+        days = data.get('days')
+        print(f"🔍 Input received - Destination: {destination}, Days: {days}")
 
-            if not destination or not isinstance(days, int) or days < 1:
-                print("❌ Invalid input")
-                return JsonResponse({"error": "Invalid input"}, status=400)
+        if not destination or not isinstance(days, int) or days < 1:
+            print("❌ Invalid input")
+            return Response({"error": "Invalid input"}, status=400)
 
-            prompt = f"Create a {days}-day itinerary for {destination}, including activities and meal suggestions."
-            API_KEY = os.environ.get("GEMINI_API_KEY")
+        prompt = f"Create a {days}-day itinerary for {destination}, including activities and meal suggestions."
+        API_KEY = os.environ.get("GEMINI_API_KEY")
 
-            if not API_KEY:
-                print("❌ Missing API key")
-                return JsonResponse({"error": "Missing Gemini API key"}, status=500)
+        if not API_KEY:
+            print("❌ Missing API key")
+            return Response({"error": "Missing Gemini API key"}, status=500)
 
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
-            payload = {
-                "contents": [
-                    {
-                        "parts": [
-                            {"text": prompt}
-                        ]
-                    }
-                ]
-            }
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
+        payload = {
+            "contents": [
+                {
+                    "parts": [{"text": prompt}]
+                }
+            ]
+        }
 
-            print("📡 Sending request to Gemini...")
-            response = requests.post(url, json=payload)
-            print("✅ Gemini responded")
+        print("📡 Sending request to Gemini...")
+        response = requests.post(url, json=payload)
+        print("✅ Gemini responded")
 
-            gemini_data = response.json()
-            print("🧾 Gemini raw response:", gemini_data)
+        gemini_data = response.json()
+        print("🧾 Gemini raw response:", gemini_data)
 
-            # Safely extract response
-            text = gemini_data['candidates'][0]['content']['parts'][0]['text']
+        text = gemini_data['candidates'][0]['content']['parts'][0]['text']
 
-            itinerary = Itinerary.objects.create(
-                destination=destination,
-                days=days,
-                created_at=timezone.now(),
-                generated_plan=text
-            )
+        itinerary = Itinerary.objects.create(
+            user=request.user,  # 🧠 THIS LINE FIXES IT
+            destination=destination,
+            days=days,
+            created_at=timezone.now(),
+            generated_plan=text
+        )
 
-            print("✅ Itinerary saved to DB")
+        print("✅ Itinerary saved to DB")
 
-            return JsonResponse({
-                "destination": destination,
-                "days": days,
-                "created_at": itinerary.created_at,
-                "generated_plan": text
-            })
+        return Response({
+            "destination": destination,
+            "days": days,
+            "created_at": itinerary.created_at,
+            "generated_plan": text
+        })
 
-        except Exception as e:
-            print("💥 Error occurred:", e)
-            return JsonResponse({"error": str(e)}, status=500)
-
-    print("❌ Not a POST request")
-    return JsonResponse({"error": "Only POST allowed"}, status=405)
+    except Exception as e:
+        print("💥 Error occurred:", e)
+        return Response({"error": str(e)}, status=500)
 
 
 # import os
