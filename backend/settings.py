@@ -74,11 +74,13 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "https://aitravelitinerary.vercel.app",
-    "http://localhost:5173",  # Dev only
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "https://aitravelitinerary.vercel.app",
+#     "http://localhost:5173",  # Dev only
+# ]
+CORS_ALLOW_ALL_ORIGINS = True
+ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = [
     "https://aitravelitinerary.vercel.app"
