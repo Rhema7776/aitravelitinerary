@@ -132,10 +132,16 @@ def generate_itinerary(request):
 
         data = request.data
         destination = data.get('destination')
-        days = data.get('days')
+
+        # Safely convert to int
+        try:
+            days = int(data.get('days'))
+        except (TypeError, ValueError):
+            return Response({"error": "Invalid number of days"}, status=400)
+
         print(f"🔍 Input received - Destination: {destination}, Days: {days}")
 
-        if not destination or not isinstance(days, int) or days < 1:
+        if not destination or days < 1:
             print("❌ Invalid input")
             return Response({"error": "Invalid input"}, status=400)
 
@@ -184,6 +190,7 @@ def generate_itinerary(request):
     except Exception as e:
         print("💥 Error occurred:", e)
         return Response({"error": str(e)}, status=500)
+
 
 
 # import os
