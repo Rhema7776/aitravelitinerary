@@ -72,6 +72,12 @@ from rest_framework.permissions import IsAuthenticated
 
 api_key = settings.GEMINI_API_KEY
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def itinerary_history(request):
